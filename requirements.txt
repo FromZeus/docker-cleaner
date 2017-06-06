@@ -1,0 +1,3 @@
+docker>=2.2.0
+pbr>=1.9
+setuptools>=17.1

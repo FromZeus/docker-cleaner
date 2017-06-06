@@ -32,7 +32,7 @@ Also checkout list of `arguments`_
 arguments
 ^^^^^^^^^
 
-* ``-f, --force`` - Force removing of resources. Choose from: image, volume, all
+* ``-f, --force`` - Force removing of resources. Choose from: ``image``, ``volume``, ``all``
 * ``-v, --client-version`` - Version of docker client to use
 * ``-o, --older`` - Clear resources that older amount of time (in minutes)
 * ``--images-include`` - Filter images that only contains any of that names

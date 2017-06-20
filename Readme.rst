@@ -25,14 +25,16 @@ or
 How to use
 ~~~~~~~~~~
 
-Run ``docker-cleaner -t 120 -o 120 -f image --images-include foo-image bar-image -l docker-cleanr.log``
+Run ``docker-cleaner images -t 120 -o 120 -f images --images-include foo-image bar-image -l docker-cleanr.log``
 
 Also checkout list of `arguments`_
 
 arguments
 ^^^^^^^^^
 
+* ``resources`` - List of resources for removing. Choose from: ``image``, ``volume``, ``all``
 * ``-f, --force`` - Force removing of resources. Choose from: ``image``, ``volume``, ``all``
+* ``-u, --untagged`` - Remove untagged images
 * ``-v, --client-version`` - Version of docker client to use
 * ``-o, --older`` - Clear resources that older amount of time (in minutes)
 * ``--images-include`` - Filter images that only contains any of that names

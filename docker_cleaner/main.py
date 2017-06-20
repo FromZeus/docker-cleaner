@@ -6,9 +6,12 @@ from auto_cleaner import AutoCleaner
 
 
 parser = argparse.ArgumentParser()
+parser.add_argument("resources", type=str,
+    default=[], nargs='+',  choices=["images", "volumes", "all"],
+    help="Types of resources for removing")
 parser.add_argument("-f", "--force", dest="force",
-    default=[], nargs='+', choices=["image", "volume", "all"],
-    help="Force removing.")
+    default=[], nargs='+', choices=["images", "volumes", "all"],
+    help="Force removing")
 parser.add_argument("-v", "--client-version", dest="version",
     default="auto", help="Version of docker client to use")
 parser.add_argument("-o", "--older", dest="older",
@@ -30,6 +33,8 @@ parser.add_argument("--volumes-exclude", dest="volumes_exclude",
     nargs='+',
     default=[],
     help="Exclude volumes that contains any of that name")
+parser.add_argument("-u", "--untagged", dest="untagged",
+    action="store_true", help="Clear untagged images")
 parser.add_argument("-t", "--timeout", dest="timeout",
     default=None, help="Timeout of cleaning. "\
     "Live it empty in case of using cron job.")
@@ -49,7 +54,9 @@ else:
 
 def main():
     try:
-        ac = AutoCleaner(timeout=args.timeout,
+        ac = AutoCleaner(resources=args.resources,
+                         timeout=args.timeout,
+                         untagged=args.untagged,
                          force=args.force,
                          version=args.version,
                          oldest=args.older,

@@ -32,8 +32,8 @@ Also checkout list of `arguments`_
 arguments
 ^^^^^^^^^
 
-* ``resources`` - List of resources for removing. Choose from: ``image``, ``volume``, ``all``
-* ``-f, --force`` - Force removing of resources. Choose from: ``image``, ``volume``, ``all``
+* ``resources`` - List of resources for removing. Choose from: ``images``, ``volumes``, ``all``
+* ``-f, --force`` - Force removing of resources. Choose from: ``images``, ``volumes``, ``all``
 * ``-u, --untagged`` - Remove untagged images
 * ``-v, --client-version`` - Version of docker client to use
 * ``-o, --older`` - Clear resources that older amount of time (in minutes)

@@ -25,7 +25,7 @@ or
 How to use
 ~~~~~~~~~~
 
-Run ``docker-cleaner images -t 120 -o 120 -f images --images-include foo-image bar-image -l docker-cleanr.log``
+Run ``docker-cleaner images -t 120 -o 120 -f images --images-include foo-image bar-image -u -l docker-cleanr.log``
 
 Also checkout list of `arguments`_
 

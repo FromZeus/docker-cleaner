@@ -70,7 +70,7 @@ class AutoCleaner(object):
             for image in filtered_images:
                 time_diff = datetime.now() - \
                     datetime.fromtimestamp(image.attrs["Created"])
-                if time_diff.seconds / 60 > self.oldest:
+                if time_diff.seconds / 60 + time_diff.days * 1440 > self.oldest:
                     try:
                         self.docker_client.images.remove(image.id,
                             force=self.i_force)

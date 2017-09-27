@@ -85,18 +85,21 @@ class AutoCleaner(object):
                 if "<Image: ''>" in str(el)]
 
             for image in filtered_images:
-                delta = datetime.now() - \
-                    datetime.fromtimestamp(0.0 if type(image.attrs["Created"])
-                        is not float else image.attrs["Created"])
-                if delta.seconds / 60 + delta.days * 1440 > self.oldest:
-                    try:
-                        self.docker_client.images.remove(image.id,
-                            force=self.i_force)
-                        log.info("{} image removed successfully".
-                            format(image.id))
-                    except Exception as ex:
-                        log.warning("Can't remove image {}".
-                            format(image.id))
+                if type(image.attrs["Created"]) is not None:
+                    delta = datetime.now() - \
+                        datetime.fromtimestamp(image.attrs["Created"])
+                    if delta.seconds / 60 + delta.days * 1440 > self.oldest:
+                        try:
+                            self.docker_client.images.remove(image.id,
+                                force=self.i_force)
+                            log.info("{} image removed successfully".
+                                format(image.id))
+                        except Exception as ex:
+                            log.warning("Can't remove image {}".
+                                format(image.id))
+                else:
+                    log.warning("Image {} has no creation date".
+                        format(image.id))
 
         if "volumes" in self.resources or "all" in self.resources:
             volumes = self.docker_client.volumes.list()

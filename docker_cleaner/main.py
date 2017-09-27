@@ -5,60 +5,66 @@ import logger
 from auto_cleaner import AutoCleaner
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument("resources", type=str,
-    default=[], nargs='+',  choices=["images", "volumes", "all"],
-    help="Types of resources for removing")
-parser.add_argument("-f", "--force", dest="force",
-    default=[], nargs='+', choices=["images", "volumes", "all"],
-    help="Force removing")
-parser.add_argument("-v", "--client-version", dest="version",
-    default="auto", help="Version of docker client to use")
-parser.add_argument("-o", "--older", dest="older",
-    default=0,
-    help="Clear resources that older amount of time (in minutes)")
-parser.add_argument("--images-include", dest="images_include",
-    nargs='+',
-    default=[""],
-    help="Filter images that only contains any of that names")
-parser.add_argument("--volumes-include", dest="volumes_include",
-    nargs='+',
-    default=[""],
-    help="Filter volumes that only contains any of that name")
-parser.add_argument("--images-exclude", dest="images_exclude",
-    nargs='+',
-    default=[],
-    help="Exclude images that contains any of that names")
-parser.add_argument("--volumes-exclude", dest="volumes_exclude",
-    nargs='+',
-    default=[],
-    help="Exclude volumes that contains any of that name")
-parser.add_argument("-p", "--prune", dest="prune",
-    nargs='+',
-    choices=["images", "volumes", "containers", "all"],
-    default=[],
-    help="Prune specified resources")
-parser.add_argument("-u", "--untagged", dest="untagged",
-    action="store_true", help="Clear untagged images")
-parser.add_argument("-t", "--timeout", dest="timeout",
-    default=None, help="Timeout of cleaning. "\
-    "Live it empty in case of using cron job.")
-parser.add_argument("-l", "--log", dest="log",
-    help="Redirect logging to file")
-args = parser.parse_args()
-
-if args.log is not None:
-    log = logging.getLogger(__name__)
-    log.addHandler(logger.FileHandler(args.log))
-    log.setLevel(logging.DEBUG)
-else:
-    log = logging.getLogger(__name__)
-    log.addHandler(logger.StreamHandler())
-    log.setLevel(logging.DEBUG)
-
-
 def main():
     try:
+        parser = argparse.ArgumentParser()
+        parser.add_argument("resources", type=str,
+            default=[], nargs='+', choices=["images", "volumes", "all"],
+            help="Types of resources for removing")
+        parser.add_argument("-f", "--force", dest="force",
+            default=[], nargs='+', choices=["images", "volumes", "all"],
+            help="Force removing")
+        parser.add_argument("-v", "--client-version", dest="version",
+            default="auto", help="Version of docker client to use")
+        parser.add_argument("-o", "--older", dest="older",
+            default=0,
+            help="Clear resources that older amount of time (in minutes)")
+        parser.add_argument("--images-include", dest="images_include",
+            nargs='+',
+            default=[""],
+            help="Filter images that only contains any of that names")
+        parser.add_argument("--volumes-include", dest="volumes_include",
+            nargs='+',
+            default=[""],
+            help="Filter volumes that only contains any of that name")
+        parser.add_argument("--images-exclude", dest="images_exclude",
+            nargs='+',
+            default=[],
+            help="Exclude images that contains any of that names")
+        parser.add_argument("--volumes-exclude", dest="volumes_exclude",
+            nargs='+',
+            default=[],
+            help="Exclude volumes that contains any of that name")
+        parser.add_argument("-p", "--prune", dest="prune",
+            nargs='+',
+            choices=["images", "volumes", "containers", "all"],
+            default=[],
+            help="Prune specified resources")
+        parser.add_argument("-u", "--untagged", dest="untagged",
+            action="store_true", help="Clear untagged images")
+        parser.add_argument("-t", "--timeout", dest="timeout",
+            default=None, help="Timeout of cleaning. "
+                "Live it empty in case of using cron job.")
+        parser.add_argument("--loglevel", dest="loglevel",
+            default="INFO",
+            choices=["CRITICAL", "ERROR", "WARNING",
+                "INFO", "DEBUG", "NOTSET"],
+            help="Logging level")
+        parser.add_argument("-l", "--log", dest="log",
+            help="Redirect logging to file")
+        args = parser.parse_args()
+
+        global log
+
+        if args.log is not None:
+            log = logging.getLogger(__name__)
+            log.addHandler(logger.FileHandler(args.log))
+            log.setLevel(getattr(logging, args.loglevel))
+        else:
+            log = logging.getLogger(__name__)
+            log.addHandler(logger.StreamHandler())
+            log.setLevel(getattr(logging, args.loglevel))
+
         ac = AutoCleaner(resources=args.resources,
                          timeout=args.timeout,
                          untagged=args.untagged,
@@ -70,6 +76,7 @@ def main():
                          images_exclude=args.images_exclude,
                          volumes_exclude=args.volumes_exclude,
                          prune=args.prune,
+                         loglevel=args.loglevel,
                          filelog=args.log)
         ac.clean()
 
@@ -79,4 +86,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

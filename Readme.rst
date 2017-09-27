@@ -43,6 +43,7 @@ arguments
 * ``--volumes-exclude`` - Exclude volumes that contains any of that name
 * ``-p, --prune`` - Prune specified resources. Choose from: ``containers``, ``images``, ``volumes``, ``all``
 * ``-t, --timeout`` - Timeout of cleaning. Live it empty in case of using cron job.
+* ``--loglevel`` - Logging level. Choose from: ``CRITICAL``, ``ERROR``, ``WARNING``, ``INFO``, ``DEBUG``, ``NOTSET``
 * ``-l, --log`` - Redirect logging to file
 
 .. |language| image:: https://img.shields.io/badge/language-python-blue.svg

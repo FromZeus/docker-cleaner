@@ -1,9 +1,8 @@
 import docker
-
-import re
+from datetime import datetime
 import time
 import logging
-from datetime import datetime
+import traceback
 
 import logger
 
@@ -25,18 +24,18 @@ class AutoCleaner(object):
                  force=[], version="auto", oldest=0,
                  images_include=[], volumes_include=[],
                  images_exclude=[], volumes_exclude=[],
-                 prune=[], filelog=None):
+                 prune=[], loglevel=None, filelog=None):
         global log
 
         if "log" not in globals():
             if filelog is not None:
                 log = logging.getLogger(__name__)
                 log.addHandler(logger.FileHandler(filelog))
-                log.setLevel(logging.DEBUG)
+                log.setLevel(getattr(logging, loglevel))
             else:
                 log = logging.getLogger(__name__)
                 log.addHandler(logger.StreamHandler())
-                log.setLevel(logging.DEBUG)
+                log.setLevel(getattr(logging, loglevel))
 
         self.docker_client = docker.DockerClient(version=version)
         self.resources = resources
@@ -57,22 +56,25 @@ class AutoCleaner(object):
             try:
                 self.docker_client.containers.prune()
                 log.info("Containers pruned successfully")
-            except Exception as ex:
+            except:
                 log.warning("Can't prune containers")
+                log.debug(traceback.format_exc())
 
         if "images" in self.prune or "all" in self.prune:
             try:
                 self.docker_client.images.prune()
                 log.info("Images pruned successfully")
-            except Exception as ex:
+            except:
                 log.warning("Can't prune images")
+                log.debug(traceback.format_exc())
 
         if "volumes" in self.prune or "all" in self.prune:
             try:
                 volumes = self.docker_client.volumes.prune()
                 log.info("Volumes pruned successfully")
-            except Exception as ex:
+            except:
                 log.warning("Can't prune volumes")
+                log.debug(traceback.format_exc())
 
         if "images" in self.resources or "all" in self.resources:
             images = self.docker_client.images.list(all=True)
@@ -85,7 +87,8 @@ class AutoCleaner(object):
                 if "<Image: ''>" in str(el)]
 
             for image in filtered_images:
-                if image.attrs["Created"] is not None:
+                if type(image.attrs["Created"]) is float or \
+                        type(image.attrs["Created"]) is int:
                     delta = datetime.now() - \
                         datetime.fromtimestamp(image.attrs["Created"])
                     if delta.seconds / 60 + delta.days * 1440 > self.oldest:
@@ -94,12 +97,14 @@ class AutoCleaner(object):
                                 force=self.i_force)
                             log.info("{} image removed successfully".
                                 format(image.id))
-                        except Exception as ex:
+                        except:
                             log.warning("Can't remove image {}".
                                 format(image.id))
+                            log.debug(traceback.format_exc())
                 else:
-                    log.warning("Image {} has no creation date".
+                    log.warning("Image {} has wrong format of creation date".
                         format(image.id))
+                    log.debug(image.attrs["Created"])
 
         if "volumes" in self.resources or "all" in self.resources:
             volumes = self.docker_client.volumes.list()
@@ -114,7 +119,7 @@ class AutoCleaner(object):
                     volume.remove(force=self.v_force)
                     log.info("{} volume removed successfully".
                         format(volume.id))
-                except Exception as ex:
+                except:
                     log.warning("Can't remove volume {}".
                         format(volume.id))
-
+                    log.debug(traceback.format_exc())

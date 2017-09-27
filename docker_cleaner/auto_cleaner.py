@@ -85,7 +85,7 @@ class AutoCleaner(object):
                 if "<Image: ''>" in str(el)]
 
             for image in filtered_images:
-                if type(image.attrs["Created"]) is not None:
+                if image.attrs["Created"] is not None:
                     delta = datetime.now() - \
                         datetime.fromtimestamp(image.attrs["Created"])
                     if delta.seconds / 60 + delta.days * 1440 > self.oldest:

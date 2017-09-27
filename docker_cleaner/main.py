@@ -33,6 +33,11 @@ parser.add_argument("--volumes-exclude", dest="volumes_exclude",
     nargs='+',
     default=[],
     help="Exclude volumes that contains any of that name")
+parser.add_argument("-p", "--prune", dest="prune",
+    nargs='+',
+    choices=["images", "volumes", "containers", "all"],
+    default=[],
+    help="Prune specified resources")
 parser.add_argument("-u", "--untagged", dest="untagged",
     action="store_true", help="Clear untagged images")
 parser.add_argument("-t", "--timeout", dest="timeout",
@@ -64,6 +69,7 @@ def main():
                          volumes_include=args.volumes_include,
                          images_exclude=args.images_exclude,
                          volumes_exclude=args.volumes_exclude,
+                         prune=args.prune,
                          filelog=args.log)
         ac.clean()
 

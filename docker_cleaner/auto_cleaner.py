@@ -25,7 +25,7 @@ class AutoCleaner(object):
                  force=[], version="auto", oldest=0,
                  images_include=[], volumes_include=[],
                  images_exclude=[], volumes_exclude=[],
-                 filelog=None):
+                 prune=[], filelog=None):
         global log
 
         if "log" not in globals():
@@ -49,15 +49,32 @@ class AutoCleaner(object):
         self.volumes_include = volumes_include
         self.images_exclude = images_exclude
         self.volumes_exclude = volumes_exclude
+        self.prune = prune
 
     @loop
     def clean(self):
-        if "images" in self.resources or "all" in self.resources:
+        if "containers" in self.prune or "all" in self.prune:
+            try:
+                self.docker_client.containers.prune()
+                log.info("Containers pruned successfully")
+            except Exception as ex:
+                log.warning("Can't prune containers")
+
+        if "images" in self.prune or "all" in self.prune:
             try:
                 self.docker_client.images.prune()
                 log.info("Images pruned successfully")
             except Exception as ex:
                 log.warning("Can't prune images")
+
+        if "volumes" in self.prune or "all" in self.prune:
+            try:
+                volumes = self.docker_client.volumes.prune()
+                log.info("Volumes pruned successfully")
+            except Exception as ex:
+                log.warning("Can't prune volumes")
+
+        if "images" in self.resources or "all" in self.resources:
             images = self.docker_client.images.list(all=True)
 
             filtered_images = [el for el in images if any(
@@ -82,11 +99,6 @@ class AutoCleaner(object):
                             format(image.id))
 
         if "volumes" in self.resources or "all" in self.resources:
-            try:
-                volumes = self.docker_client.volumes.prune()
-                log.info("Volumes pruned successfully")
-            except Exception as ex:
-                log.warning("Can't prune volumes")
             volumes = self.docker_client.volumes.list()
 
             filtered_volumes = [el for el in volumes if any(

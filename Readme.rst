@@ -25,7 +25,7 @@ or
 How to use
 ~~~~~~~~~~
 
-Run ``docker-cleaner images -t 120 -o 120 -f images --images-include foo-image bar-image -u -l docker-cleanr.log``
+Run ``docker-cleaner images -t 120 -o 120 -f images --images-include foo-image bar-image --prune containers volumes -u -l docker-cleanr.log``
 
 Also checkout list of `arguments`_
 
@@ -41,6 +41,7 @@ arguments
 * ``--volumes-include`` - Filter volumes that only contains any of that name
 * ``--images-exclude`` - Exclude images that contains any of that names
 * ``--volumes-exclude`` - Exclude volumes that contains any of that name
+* ``-p, --prune`` - Prune specified resources. Choose from: ``containers``, ``images``, ``volumes``, ``all``
 * ``-t, --timeout`` - Timeout of cleaning. Live it empty in case of using cron job.
 * ``-l, --log`` - Redirect logging to file
 
